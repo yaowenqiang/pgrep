@@ -2,7 +2,7 @@ use clap::{clap_app, crate_version};
 use regex::Regex;
 use std::path::Path;
 use failure::{Error, Fail};
-use std::fmt;
+//use std::fmt;
 
 #[derive(Debug)]
 struct Record {
@@ -39,11 +39,20 @@ fn run() -> Result<(), Error> {
 
     let re = Regex::new( cp.value_of("pattern").unwrap())?;
     //let p = process_file(
+    /*
     let p = process_file(
         //cp.value_of("file").ok_or("No file chosen")?, 
         cp.value_of("file").ok_or(ArgErr {arg: "file"})?, 
         &re
     );
+    */
+
+    let p = process_path(cp.value_of("file").ok_or(ArgErr {arg: "file"})?, &re, &|pt, v| {
+        println!("{:?}", pt);
+        println!("{:?}", v);
+    }, &|e| {
+        println!("Error: {}", e);
+    } );
     println!("{:?}", p);
     Ok(())
 }
@@ -83,12 +92,10 @@ where
 
     if ft.is_dir() {
         let dd = std::fs::read_dir(p)?;
-
         for d in dd {
-            if let Err(e) = process_path(d?.path(), re, ff) {
+            if let Err(e) = process_path(d?.path(), re, ff, ef) {
                 ef(e);
             }
-
         }
     }
     Ok(())
