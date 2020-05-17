@@ -10,21 +10,24 @@ struct Record {
     tx:String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Fail)]
+#[fail(display = "Argument not provided '{}'", arg)]
 struct ArgErr {
     arg: &'static str,
 }
 
-impl Fail for ArgErr { }
+//impl Fail for ArgErr { }
 
+/*
 impl fmt::Display for ArgErr {
     fn fmt(&self, f:&mut fmt::Formatter) -> fmt::Result {
         write!(f, "Argument Not provided!{}", self.arg)
     }
 }
+*/
 
 
-fn main() -> Result<(), Error> {
+fn run() -> Result<(), Error> {
     let cp = clap_app!{
         pgrep => 
             (version: crate_version!())
@@ -64,7 +67,6 @@ fn process_file<P:AsRef<Path>>(p:P, re: &Regex) -> Result<Vec<Record>, Error>
     Ok(res)
 }
 
-/*
 fn process_path<P, FF, EF>(p:P, re:&Regex, ff:&FF, ef:&EF) -> Result<(), Error> 
 where 
     P:AsRef<Path>, 
@@ -92,4 +94,11 @@ where
     Ok(())
 
 }
-*/
+
+
+fn main()
+{
+    if let Err(e) = run() {
+        println!("There was an error: {}", e);
+    }
+}
